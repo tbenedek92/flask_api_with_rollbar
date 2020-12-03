@@ -1,2 +1,2 @@
 # flask_api_with_rollbar
-Flask Restful-API POC with Rollbar integration
+POC project for Flask Resftul-API with Rollbar integration
