@@ -106,23 +106,7 @@ def Main():
 
 
 
-@app.errorhandler(errors.UserAlreadyExistError)
-def handle_user_already_exists(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
 
-@app.errorhandler(errors.UserDoesNotExistError)
-def handle_user_already_exists(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
-
-@app.errorhandler(errors.PermissionDenied)
-def handle_user_already_exists(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
 
 if __name__ == '__main__':
     Main()
