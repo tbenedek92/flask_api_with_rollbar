@@ -1,14 +1,12 @@
 from flask import Flask, jsonify, request
 import os
-import rollbar
 import rollbar.contrib.flask as rb_flask
 from flask import got_request_exception
 from flask import Request
 import pandas as pd
 from flask_restful import reqparse
 import rollbar
-import sys
-import errors
+import resources.errors as errors
 
 app = Flask(__name__)
 
@@ -23,8 +21,6 @@ def init_rollbar():
     rollbar.report_message('Rollbar initialized succesfully', level='debug')
 
     got_request_exception.connect(rb_flask.report_exception, app)
-
-
 
 
 class CustomRequest(Request):
@@ -63,6 +59,7 @@ def add_user():
     else:
         raise errors.UserAlreadyExistError("user is already in the database, please use PUT method")
 
+
 @app.route('/user/<string:user>', methods=['PUT'])
 def update_user(user):
     global user_df
@@ -94,7 +91,6 @@ def delete_user():
 
 
 def Main():
-
     global user_df
     global parser
 
@@ -103,9 +99,6 @@ def Main():
     parser.add_argument('user')
     parser.add_argument('password')
     parser.add_argument('new_password')
-
-
-
 
 
 if __name__ == '__main__':

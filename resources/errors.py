@@ -13,6 +13,7 @@ class UserAlreadyExistError(Exception):
         rv['message'] = self.message
         return rv
 
+
 class UserDoesNotExistError(Exception):
     status_code = 405
 
@@ -27,6 +28,8 @@ class UserDoesNotExistError(Exception):
         rv = dict(self.payload or ())
         rv['message'] = self.message
         return rv
+
+
 class PermissionDenied(PermissionError):
     status_code = 401
 
