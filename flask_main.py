@@ -7,8 +7,16 @@ import pandas as pd
 from flask_restful import reqparse
 import rollbar
 import resources.errors as errors
+import git
 
 app = Flask(__name__)
+
+def get_git_sha():
+    repo = git.Repo(search_parent_directories=True)
+    sha = repo.head.commit.hexsha
+    short_sha = repo.git.rev_parse(sha, short=4)
+    print(f'Git short sha: {short_sha}')
+    return short_sha
 
 @app.before_first_request
 def init_rollbar():
@@ -16,7 +24,8 @@ def init_rollbar():
         access_token='8026b336e7e4475482765f8b119d4049',
         environment='flask_test',
         root=os.path.dirname(os.path.realpath(__file__)),
-        allow_logging_basics_config=False
+        allow_logging_basics_config=False,
+        code_version=get_git_sha()
     )
     rollbar.report_message('Rollbar initialized succesfully', level='debug')
 
