@@ -98,23 +98,24 @@ def delete_user():
 
     return None
 
+@app.route('/userlist', methods=['GET'])
+def get_user_list():
+    if len(user_df) > 0:
+        user_list = user_df['user'].tolist()
+        return jsonify(user_list), 201
+    else:
+        raise errors.EmptyUserList("No user has been registered yet")
+
+
 @app.errorhandler(errors.UserAlreadyExistError)
-def handle_user_already_exists(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
-
 @app.errorhandler(errors.UserDoesNotExistError)
-def handle_user_doesnt_exists(error):
+@app.errorhandler(errors.PermissionDenied)
+@app.errorhandler(errors.EmptyUserList)
+def default_error_handler(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
 
-@app.errorhandler(errors.PermissionDenied)
-def handle_permission_denied(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
 
 def Main():
     global user_df
