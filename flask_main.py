@@ -9,6 +9,7 @@ import rollbar
 import resources.errors as errors
 import git
 from resources.users import user_mgmt
+from resources.errorhandlers import bp_error_handler
 
 app = Flask(__name__)
 
@@ -33,7 +34,6 @@ def init_rollbar():
     got_request_exception.connect(rb_flask.report_exception, app)
 
 
-
 class CustomRequest(Request):
     @property
     def rollbar_person(self):
@@ -52,22 +52,8 @@ def hello():
 
     return "Hello World!"
 
-
-
-
-
-@app.errorhandler(errors.UserAlreadyExistError)
-@app.errorhandler(errors.UserDoesNotExistError)
-@app.errorhandler(errors.PermissionDenied)
-@app.errorhandler(errors.EmptyUserList)
-def default_error_handler(error):
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
-
-
-
 if __name__ == '__main__':
     app.register_blueprint(user_mgmt)
+    app.register_blueprint(bp_error_handler)
     app.run()
 
