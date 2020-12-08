@@ -37,11 +37,17 @@ def init_rollbar():
     got_request_exception.connect(rb_flask.report_exception, bp_error_handler)
 
 
-
 class CustomRequest(Request):
+
+    DEFAULT_RB_ID = 0
+    DEFAULT_RB_USERNAME= 'default_test_rollbar_user'
+    DEFAULT_RB_EMAIL = 'default_test@rollbar.com'
+
     @property
-    def rollbar_person(self):
-        return {'id': '0', 'username':'test_rollbar_user', 'email': 'test_rollbar_user@example.com'}
+    def rollbar_person(self, rb_id=DEFAULT_RB_ID, username=DEFAULT_RB_USERNAME, email=DEFAULT_RB_USERNAME):
+        return {'id': rb_id, 'username': username, 'email': email}
+
+
 @app.route('/')
 def hello():
     print("in hello")
