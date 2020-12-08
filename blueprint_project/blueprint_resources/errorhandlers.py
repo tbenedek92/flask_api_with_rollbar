@@ -1,5 +1,5 @@
 from flask import jsonify, Blueprint
-import resources.errors as errors
+import blueprint_project.blueprint_resources.errors as errors
 from flask.signals import got_request_exception
 
 bp_error_handler = Blueprint('error_handlers', __name__)

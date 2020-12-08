@@ -1,15 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask
 import os
 import rollbar.contrib.flask as rb_flask
 from flask import got_request_exception
 from flask import Request
-import pandas as pd
-from flask_restful import reqparse
 import rollbar
-import resources.errors as errors
 import git
-from resources.users import user_mgmt
-from resources.errorhandlers import bp_error_handler, default_error_handler
+from blueprint_project.blueprint_resources.users import user_mgmt
+from blueprint_project.blueprint_resources.errorhandlers import bp_error_handler
 
 app = Flask(__name__)
 

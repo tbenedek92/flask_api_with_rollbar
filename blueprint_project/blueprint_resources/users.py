@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_restful import reqparse
 import pandas as pd
-import resources.errors as errors
+import blueprint_project.blueprint_resources.errors as errors
 
 
 user_mgmt = Blueprint('user_mgmt', __name__)
