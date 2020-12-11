@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta, timezone
 import time
 import restful_project.restful_resources.errors as errors
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_restful import Resource, reqparse
 from flask import jsonify
 from flask_bcrypt import generate_password_hash, check_password_hash
@@ -16,10 +16,13 @@ parser.add_argument('new_password')
 
 
 class UsersApi(Resource):
+
+    @jwt_required
     def get(self):
         if len(user_df) > 0:
-            user_list = user_df['user'].tolist()
-            return jsonify(user_list), 201
+            user_dict = user_df[['user', 'email']].to_dict(orient='index')
+            print(user_dict)
+            return user_dict, 201
         else:
             raise errors.EmptyUserList
 
@@ -88,19 +91,32 @@ class AuthApi(Resource):
         else:
             raise errors.EmptyUserList
 
+
 class UserApi(Resource):
-      def get(self):
-          return
 
-      def put(self):
-          return
+    @jwt_required
+    def put(self, user):
+        global user_df
+        user_id = get_jwt_identity()
+        print(user_id)
+        args = parser.parse_args()
+        # user = args['user']
+        password = args['password']
+        new_password = args['new_password']
 
-      def post(self):
-          return
+        if user in user_df['user'].values:
+            user_dict = {'user': user,
+                         'password': new_password}
+            min_index = user_df[user_df['user'] == user].index.min()
+            if min_index == user_id:
 
-      def delete(self):
-          return
-
+                user_df.at[min_index, 'password'] = hash_password(new_password)
+                print(user_df)
+                return {'response': 'Password succesfully updated'}, 201
+            else:
+                raise errors.PermissionDenied
+        else:
+            raise errors.UserDoesNotExistError("user not found")
 
 def add_user():
     global user_df

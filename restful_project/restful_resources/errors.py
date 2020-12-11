@@ -28,7 +28,7 @@ errors = {
         "status": 405
     },
     "PermissionDenied": {
-        "message": "Password mismatch - no permission to update user.",
+        "message": "Permission denied - You are not authorized to perform this action",
         "status": 401
     }
 }
