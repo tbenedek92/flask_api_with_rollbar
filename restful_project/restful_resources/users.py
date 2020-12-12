@@ -84,6 +84,7 @@ class AuthApi(Resource):
                 delta = timedelta(hours=4)
 
                 acs_token['valid_to'] = (datetime.utcnow()+delta).replace(tzinfo=timezone.utc).timestamp()
+                acs_token['user_id'] = selected_user_index
                 acs_token['token'] = create_access_token(identity=selected_user_index, expires_delta=delta)
                 return acs_token, 200
             else:
@@ -92,7 +93,7 @@ class AuthApi(Resource):
             raise errors.EmptyUserList
 
 
-class UserApi(Resource):
+class PasswordChangeUserName(Resource):
 
     @jwt_required
     def put(self, user):
@@ -117,6 +118,26 @@ class UserApi(Resource):
                 raise errors.PermissionDenied
         else:
             raise errors.UserDoesNotExistError("user not found")
+
+
+class PasswordChangeUserID(Resource):
+
+    @jwt_required
+    def put(self, id):
+        global user_df
+        user_id = get_jwt_identity()
+        print(user_id)
+        args = parser.parse_args()
+        new_password = args['new_password']
+
+        if user_id == id:
+
+                user_df.at[id, 'password'] = hash_password(new_password)
+                print(user_df)
+                return {'response': 'Password succesfully updated'}, 201
+        else:
+            raise errors.PermissionDenied
+
 
 def add_user():
     global user_df
