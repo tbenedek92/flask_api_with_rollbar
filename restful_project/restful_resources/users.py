@@ -30,6 +30,22 @@ class UsersApi(Resource):
         return
 
 
+class UserDetailsApi(Resource):
+
+    @jwt_required
+    def get(self, id):
+        user_id = get_jwt_identity()
+        if user_id == id:
+            user_dict = user_df[['user', 'email']].iloc[id].to_dict(orient='index')
+            print(user_dict)
+            return user_dict, 201
+        else:
+            raise errors.PermissionDenied
+
+    def post(self):
+        return
+
+
 def check_password(password_hash, password):
     return check_password_hash(password_hash, password)
 
