@@ -3,11 +3,13 @@ import os
 import rollbar.contrib.flask as rb_flask
 import rollbar
 import git
+import threading
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from restful_project.restful_resources.errors import errors
 from restful_project.restful_resources.routes import initialize_routes
+
 
 
 app = Flask(__name__)
@@ -57,8 +59,13 @@ def hello():
     return "Hello World!"
 
 
+import auto_test
+
 if __name__ == '__main__':
     app.request_class = CustomRequest
 
+    threading.Thread(target=auto_test.auto_test_run).start()
     app.run()
+    # from .auto_test.auto_test import auto_test_run
+    # auto_test_run()
 
