@@ -35,8 +35,13 @@ class UserDetailsApi(Resource):
     @jwt_required
     def get(self, id):
         user_id = get_jwt_identity()
+        try:
+            id = int(id)
+        except ValueError:
+            raise Exception #invalid URL
         if user_id == id:
-            user_dict = user_df[['user', 'email']].iloc[id].to_dict(orient='index')
+            filtered_user_df = user_df[['user', 'email']].iloc[id].to_frame()
+            user_dict = filtered_user_df.to_dict(orient='dict')
             print(user_dict)
             return user_dict, 201
         else:
