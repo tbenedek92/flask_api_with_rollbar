@@ -7,7 +7,7 @@ import threading
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-from restful_project.restful_resources.errors import errors
+from restful_project.restful_resources.errors import errors, custom_exception_handler
 from restful_project.restful_resources.routes import initialize_routes
 
 
@@ -36,8 +36,8 @@ def init_rollbar():
         allow_logging_basics_config=False,
         code_version=get_git_sha()
     )
+    rollbar.events.add_payload_handler(custom_exception_handler)
     rollbar.report_message('Rollbar initialized succesfully', level='debug')
-
     got_request_exception.connect(rb_flask.report_exception, app)
 
 
