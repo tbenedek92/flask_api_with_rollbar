@@ -21,13 +21,17 @@ ENDPOINT_LIST = ['signup', 'login', 'users', 'user']
 
 
 def auto_test_run():
+    global logins
     sleep(2)
     api_call(ENDPOINT_LIST[0], 'POST', USERS)
     logins = api_call(ENDPOINT_LIST[1], 'POST', USERS)
+    # get_new_token(logins)
     token = {}
     for index, login in logins.items():
         resp = json.loads(login.text)
         token[resp['user_id']] = resp['token']
+
+    threading.Thread(target=get_new_token_thread).start()
 
 
 
@@ -36,17 +40,19 @@ def auto_test_run():
     return
 
 
-def get_new_token_thread(logins):
+def get_new_token_thread():
+    global logins
+
     while 1:
-        get_new_token(logins)
+        logins = get_new_token(logins)
         sleep(10)
 
 
 def get_new_token(logins):
-    for login in logins:
+    for key, login in logins.items():
         resp = json.loads(login.text)
         if time() > resp['valid_to']-600:
-            api_call(f'user_id/{resp["user_id"]}', 'GET')
+            user_data = api_call(f'user_id/{resp["user_id"]}', 'GET')
             logins = api_call(ENDPOINT_LIST[1], 'POST', USERS)
             break
     return logins
@@ -58,7 +64,7 @@ def generate_useralreadyexist_errors(runs=10, continous=False, delay='auto'):
     first_run = True
     while continous or first_run:
         if delay == 'auto':
-            delay_s = random.randrange(10, 100, 1)
+            delay_s = random.randrange(90, 900, 1)
         elif isinstance(delay, int):
             delay_s = delay
         else:
