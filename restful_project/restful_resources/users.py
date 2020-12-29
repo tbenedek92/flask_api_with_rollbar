@@ -4,7 +4,7 @@ import time
 import restful_project.restful_resources.errors as errors
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_restful import Resource, reqparse
-from flask import jsonify
+from flask import jsonify, request
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 user_df = pd.DataFrame(columns=['user', 'email', 'password'])
@@ -98,6 +98,15 @@ class AuthApi(Resource):
         if len(selected_user)>0:
             selected_user_index=int(selected_user.index.min())
             password_hash = selected_user['password'][selected_user_index]
+            email = selected_user['email'][selected_user_index]
+
+            rb_person_dict = {
+                'rb_id': str(selected_user_index),
+                'username': str(user),
+                'email': str(email)
+            }
+            request.rollbar_person = rb_person_dict
+
             authorized = check_password(password_hash, password)
 
             if authorized:
