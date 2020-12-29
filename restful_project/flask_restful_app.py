@@ -9,13 +9,19 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from restful_project.restful_resources.errors import errors, custom_exception_handler
 from restful_project.restful_resources.routes import initialize_routes
+import yaml
 
+with open("tokens.yaml", 'r') as stream:
+    try:
+        yaml_loaded = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
 
 
 app = Flask(__name__)
 app.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(app, errors=errors)
-app.config.setdefault('JWT_SECRET_KEY', 'goX3LAcMwR8AuAyGUVGvfPrEwJgxWtvA9hf2NA4P7J7kV27fx')
+app.config.setdefault('JWT_SECRET_KEY', yaml_loaded['jwt_secret_key'])
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 initialize_routes(api)
@@ -31,7 +37,7 @@ def get_git_sha():
 @app.before_first_request
 def init_rollbar():
     rollbar.init(
-        access_token='67e198a2a8134062aa5677967e33d9a5',
+        access_token=yaml_loaded['rollbar_token'],
         environment='flask_test',
         root=os.path.dirname(os.path.realpath(__file__)),
         allow_logging_basics_config=False,
@@ -75,7 +81,7 @@ import auto_test
 if __name__ == '__main__':
     app.request_class = CustomRequest
 
-   # threading.Thread(target=auto_test.auto_test_run).start()
+    threading.Thread(target=auto_test.auto_test_run).start()
     app.run()
     # from .auto_test.auto_test import auto_test_run
     # auto_test_run()
