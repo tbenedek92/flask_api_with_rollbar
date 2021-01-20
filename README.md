@@ -1,4 +1,4 @@
-# flask_api_with_rollbar
+# Description
 POC project for Flask based Resftul API with Rollbar integration <br/>
 2 subproject contained: <br/>
     - simple poc solution with flask.blueprint <br/>
